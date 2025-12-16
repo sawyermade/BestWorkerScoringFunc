@@ -2,7 +2,9 @@
 
 ## Clone and Run
 ```bash
-
+git clone https://github.com/sawyermade/BestWorkerScoringFunc.git 
+cd BestWorkerScoringFunc
+func start # Azurite must also be running
 ```
 
 ## Curl Command
