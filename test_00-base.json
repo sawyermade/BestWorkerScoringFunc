@@ -1,0 +1,14 @@
+{
+    "job": {
+        "HighPriority": false,
+        "Licensure": ["Electrical-ICC", "Electrical-DBPR"],
+        "Jurisdiction": "PBC",
+        "CommunivationType": "VideoCall"
+    },
+    "worker": {
+        "HighPriority": false,
+        "Licensure": ["Building", "Electrical-ICC"],
+        "Jurisdiction": [],
+        "CommunivationType": "VideoCall"
+    }
+}

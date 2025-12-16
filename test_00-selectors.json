@@ -1,0 +1,28 @@
+{
+    "job": {
+        "HighPriority": false,
+        "Licensure": ["Electrical-ICC", "Electrical-DBPR"],
+        "Jurisdiction": "PBC",
+        "CommunivationType": "VideoCall"
+    },
+    "selectors": [
+        {
+            "key": "Licensure",
+            "operator": "GreaterThanEqual",
+            "value": 1,
+            "expiresAfterSeconds": null
+        },
+        {
+            "key": "Jurisdiction",
+            "operator": "notEquals",
+            "value": 1,
+            "expiresAfterSeconds": null
+        }
+    ],
+    "worker": {
+        "HighPriority": false,
+        "Licensure": ["Building", "Electrical-ICC"],
+        "Jurisdiction": [],
+        "CommunivationType": "VideoCall"
+    }
+}
