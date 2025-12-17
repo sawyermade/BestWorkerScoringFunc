@@ -266,3 +266,4 @@ __pycache__/
 # Azurite Files
 __azurite_db_*
 __*
+Azurite*
