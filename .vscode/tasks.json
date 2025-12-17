@@ -1,0 +1,29 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build (Debug)",
+			"type": "shell",
+			"command": "dotnet",
+			"args": [
+				"build",
+				"${workspaceFolder}/BestWorkerScoringFunc.csproj",
+				"-c",
+				"Debug"
+			],
+			"problemMatcher": ["$msCompile"],
+			"group": "build"
+		},
+		{
+			"label": "Run Functions Host",
+			"type": "shell",
+			"command": "func host start",
+			"args": [],
+			"isBackground": true,
+			"problemMatcher": [],
+			"dependsOn": ["Build (Debug)"],
+			"dependsOrder": "sequence",
+			"group": "build"
+		}
+	]
+}

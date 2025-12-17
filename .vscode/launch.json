@@ -1,0 +1,28 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        
+        // {
+        //     "name": "Attach to .NET Functions",
+        //     "type": "coreclr",
+        //     "request": "attach",
+        //     "processId": "${command:azureFunctions.pickProcess}",
+        //     "justMyCode": false
+        // },
+        {
+            "name": "Run Functions Host & Attach",
+            "type": "coreclr",
+            "request": "attach",
+            "processId": "${command:azureFunctions.pickProcess}",
+            "preLaunchTask": "Run Functions Host",
+            "justMyCode": true
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Start Functions and Attach",
+            "configurations": ["Run Functions Host & Attach"]
+        }
+    ]
+}
+ 
