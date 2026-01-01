@@ -24,41 +24,98 @@
 
 using System.Net;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 
+namespace BestWorkerScoringFunc;
+
 // Main json payload class
+// public class BestWorkerModePayload
+// {
+//     public Job Job { get; set; } = new();
+//     public Worker Worker { get; set; } = new();
+//     public List<Selector> Selectors { get; set; } = new();
+// }
+
+// // Job class
+// public class Job
+// {
+//     public bool HighPriority { get; set; }
+//     public List<string> Licensure { get; set; } = new();
+//     public string Jurisdiction { get; set; } = "";
+// }
+
+// // Selector class
+// public class Selector
+// {
+//     public string Key { get; set; } = "";
+//     public string Operator { get; set; } = "";
+//     public int Value { get; set; }
+//     public int? ExpiresAfterSeconds { get; set; }
+// }
+
+// // Worker class
+// public class Worker
+// {
+//     public bool HighPriority { get; set; }
+//     public List<string> Licensure { get; set; } = new();
+//     public List<string> Jurisdiction { get; set; } = new();
+// }
+
 public class BestWorkerModePayload
 {
+    [JsonPropertyName("job")]
     public Job Job { get; set; } = new();
+
+    [JsonPropertyName("selectors")]
+    public List<Selectors> Selectors { get; set; } = new();
+
+    [JsonPropertyName("worker")]
     public Worker Worker { get; set; } = new();
-    public List<Selector> Selectors { get; set; } = new();
 }
 
-// Job class
 public class Job
 {
-    public bool HighPriority { get; set; }
-    public List<string> Licensure { get; set; } = new();
-    public string Jurisdiction { get; set; } = "";
+    [JsonPropertyName("certificationId")]
+    public string CertificationId { get; set; } = "";
+
+    // JSON uses "JurisdictionId" (capital J)
+    [JsonPropertyName("JurisdictionId")]
+    public string JurisdictionId { get; set; } = "";
 }
 
-// Selector class
-public class Selector
-{
-    public string Key { get; set; } = "";
-    public string Operator { get; set; } = "";
-    public int Value { get; set; }
-    public int? ExpiresAfterSeconds { get; set; }
-}
-
-// Worker class
 public class Worker
 {
-    public bool HighPriority { get; set; }
-    public List<string> Licensure { get; set; } = new();
-    public List<string> Jurisdiction { get; set; } = new();
+    // JSON uses "Id" (capital I)
+    [JsonPropertyName("Id")]
+    public string Id { get; set; } = "";
+
+    // Note: in your JSON this is a single comma-separated string, not an array
+    [JsonPropertyName("certificationIds")]
+    public string CertificationIds { get; set; } = "";
+
+    // JSON uses "JurisdictionIds" (capital J), and it's an empty string in the sample
+    [JsonPropertyName("JurisdictionIds")]
+    public string JurisdictionIds { get; set; } = "";
+}
+
+public class Selectors
+{
+    // Your sample has selectors: [] so shape is unknown.
+    // These common fields make it flexible; extra JSON fields will be ignored by default.
+    [JsonPropertyName("key")]
+    public string Key { get; set; } = "";
+
+    [JsonPropertyName("operator")]
+    public string Operator { get; set; } = "";
+
+    [JsonPropertyName("value")]
+    public int Value { get; set; } = 0;
+
+    [JsonPropertyName("expiresAfterSeconds")]
+    public int ExpiresAfterSeconds { get; set; } = 0;
 }
 
 // HTTP Trigger Function
@@ -76,6 +133,7 @@ public class ScoreWorker
         [HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req)
     {
         var body = await new StreamReader(req.Body).ReadToEndAsync();
+        Console.WriteLine($"Request Body: {body}");
 
         BestWorkerModePayload? payload;
         try
@@ -84,6 +142,8 @@ public class ScoreWorker
                 body,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
             );
+            Console.WriteLine($"Payload Json: {JsonSerializer.Serialize(payload)}");
+            Console.WriteLine($"Payload: {JsonSerializer.Serialize(payload)}");
         }
         catch (Exception ex)
         {
@@ -105,6 +165,7 @@ public class ScoreWorker
         var ok = req.CreateResponse(HttpStatusCode.OK);
         // IMPORTANT: return a raw number (string is fine) like "0" or "100"
         await ok.WriteStringAsync(score.ToString());
+        Console.WriteLine($"Score: {score}");
         return ok;
     }
 }
@@ -117,11 +178,11 @@ public class BestWorkerMode
         var score = 0;
         var scoreRequired = 0;
 
-        var jobLicensures = payload.Job.Licensure;
-        var jobJurisdiction = payload.Job.Jurisdiction;
+        var jobLicensures = payload.Job.CertificationId.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+        var jobJurisdiction = payload.Job.JurisdictionId;
 
-        var workerLicensures = payload.Worker.Licensure;
-        var workerJurisdiction = payload.Worker.Jurisdiction;
+        var workerLicensures = payload.Worker.CertificationIds.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
+        var workerJurisdiction = payload.Worker.JurisdictionIds.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList();
 
         var selectors = payload.Selectors;
 

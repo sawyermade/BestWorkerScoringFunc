@@ -4,7 +4,9 @@
 ```bash
 git clone https://github.com/sawyermade/BestWorkerScoringFunc.git 
 cd BestWorkerScoringFunc
-func start # Azurite must also be running
+azurite # Run in separate window
+func start # Runs in separate window
+ngrok http 8080 # Runs in separate window
 ```
 
 ## Curl Command
