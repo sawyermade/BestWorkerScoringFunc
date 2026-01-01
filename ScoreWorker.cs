@@ -166,7 +166,14 @@ public class ScoreWorker
         // IMPORTANT: return a raw number (string is fine) like "0" or "100"
         await ok.WriteStringAsync(score.ToString());
         Console.WriteLine($"Score: {score}");
-        return ok;
+        if (score >= 100)
+        {
+            return ok;
+        }
+        else
+        {
+            return ok;
+        }
     }
 }
 
