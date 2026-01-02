@@ -164,16 +164,17 @@ public class ScoreWorker
 
         var ok = req.CreateResponse(HttpStatusCode.OK);
         // IMPORTANT: return a raw number (string is fine) like "0" or "100"
-        await ok.WriteStringAsync(score.ToString());
-        Console.WriteLine($"Score: {score}");
-        if (score >= 100)
+        // 0 still allows the worker to be considered, whereas "null" disqualifies them
+        if (score < 100)
         {
-            return ok;
+            await ok.WriteStringAsync(score.ToString());   
         }
         else
         {
-            return ok;
+            await ok.WriteStringAsync("null");
         }
+        Console.WriteLine($"Score: {score}");
+        return ok;
     }
 }
 
