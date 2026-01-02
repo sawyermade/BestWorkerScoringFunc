@@ -122,6 +122,11 @@ public class Selectors
 public class ScoreWorker
 {
     private readonly ILogger _log;
+    private readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
+    {
+        PropertyNameCaseInsensitive = true
+    };
+    private readonly int scoreRequired = 100;
 
     public ScoreWorker(ILoggerFactory loggerFactory)
     {
@@ -140,7 +145,7 @@ public class ScoreWorker
         {
             payload = JsonSerializer.Deserialize<BestWorkerModePayload>(
                 body,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                _jsonOptions
             );
             Console.WriteLine($"Payload Json: {JsonSerializer.Serialize(payload)}");
             Console.WriteLine($"Payload: {JsonSerializer.Serialize(payload)}");
@@ -165,7 +170,7 @@ public class ScoreWorker
         var ok = req.CreateResponse(HttpStatusCode.OK);
         // IMPORTANT: return a raw number (string is fine) like "0" or "100"
         // 0 still allows the worker to be considered, whereas "null" disqualifies them
-        if (score < 100)
+        if (score < scoreRequired)
         {
             await ok.WriteStringAsync(score.ToString());   
         }
